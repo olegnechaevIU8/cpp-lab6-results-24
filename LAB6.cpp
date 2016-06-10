@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <iostream>
+#include <stdlib.h>
 #include <stdexcept>
 #include <cmath>
 #include <string>
@@ -13,15 +14,15 @@ using namespace std;
 class Rational
 {
 	int num, den;
-	
+
 public:
-	
+
 	Rational()
 	{
 		num = 0;
 		den = 0;
 	}
-	
+
 	Rational(int num_, int den_) //Rationalnie chisla
 	{
 		this->num = num_;
@@ -138,11 +139,11 @@ public:
 	}
 	matrix<X>  operator *(X a) // YMNOZHENIE
 	{
-		
+
 		for (int i = 0; i < M; i++)
 		{
 			for (int j = 0; j < N; j++)
-				T[i][j] = T[i][j]*a;
+				T[i][j] = T[i][j] * a;
 		}
 		matrix U(M, N);
 
@@ -154,60 +155,99 @@ public:
 			}
 		}
 		return U;
-		
+
 
 	}
 
 	matrix<X>  operator |(matrix<X>& a) //Konkatenacia
-		{
-			
-			matrix U(M, N+a.N);
-
-			for (int i = 0; i<M; i++)
-			{
-				for (int j = 0; j < N+a.N; j++)
-				{
-					if (j < N)
-					{
-						U(i, j) = T[i][j];
-					}
-					else
-					{
-						U(i, j) = a.T[i][j-N];
-					}
-				}
-			}
-			return U;
-		}
-
-	~matrix()
 	{
 
+		matrix U(M, N + a.N);
+
+		for (int i = 0; i<M; i++)
+		{
+			for (int j = 0; j < N + a.N; j++)
+			{
+				if (j < N)
+				{
+					U(i, j) = T[i][j];
+				}
+				else
+				{
+					U(i, j) = a.T[i][j - N];
+				}
+			}
+		}
+		return U;
+	}
+
+	~matrix(){}
+
+	class iterator {
+		matrix* Ma;
+		size_t c;
+	public:
+		iterator(matrix* a, size_t b) : Ma(a), c(b) {};
+
+		iterator& operator++() {
+			c++;
+			return *this;
+		}
+
+		Z& operator*() {
+			return Ma->e[c];
+		}
+
+		Z* operator->() {
+			return &(Ma->e[c]);
+		}
+
+		bool operator !=(const iterator& it) {
+			return !(*this == it);
+		}
+
+		bool operator ==(const iterator& it) {
+			return (c == it.c);
+		}
+	};
+	iterator begin() {
+		return iterator(this, 0);
+	}
+
+	iterator end() {
+		return iterator(this, N*M);
 	}
 
 };
 
+template<template <class> class cont, typename Z, typename X>
+cont<X> caster(cont<Z> a) {
+	cont<X> b(m.n, m.m);
+	for (int i = 0; i < n*m; i++) b.e[i] = static_cast<X>(a.e[i]);
+	return b;
+}
+
 template <class X>
-void function(matrix<X> G, X n) 
+void function(matrix<X> G, X n)
 {
-	
-	
+
+
 	for (int i = 0; i<5; i++)
 	{
 		for (int j = 0; j < 6; j++)
 		{
-				G(i, j) = n;
-			
+			G(i, j) = n;
+
 		}
 	}
 
 	cout << "Nachalnaya matrica: \n";
 	G.print();
-	
+
 	cout << "Umnozhenie na chislo = 5: \n";
 	G = G * n;
 	G.print();
-	
+
 	cout << "Transponirovanie: \n";
 	G = &G;
 	G.print();
@@ -221,10 +261,10 @@ void function(matrix<X> G, X n)
 int main()
 {
 
-	cout << "\n Test2 - matrix \n"; 
+	cout << "\n Test2 - matrix \n";
 	matrix<Rational> M(5, 6);
 	matrix<int> A(5, 6);
-	function(M,Rational(1,2));
+	function(M, Rational(1, 2));
 	cout << "--------------------------------" << endl;
 	function(A, 3);
 	system("pause");

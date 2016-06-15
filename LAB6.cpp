@@ -1,5 +1,3 @@
-//india
-
 #include "stdafx.h"
 #include <iostream>
 #include <stdlib.h>
@@ -114,6 +112,26 @@ public:
 		return T[i][j];
 	}
 
+	template<typename X>
+	friend ostream&  operator <<(ostream& os, const matrix<X>&a);
+	template <typename X>
+	matrix<X>  operator*(const matrix<X>& a) const
+	{
+		matrix<X> U(M, a.N);
+
+		for (int i = 0; i < M; i++)
+		{
+			for (int j = 0; j < a.N; j++)
+			{
+				for (int t = 0; t < N; t++)
+				{
+					U(i, j) = U(i, j) + T[i][t] * a.T[t][j];
+				}
+			}
+		}
+		return U;
+	}
+
 	void print() //
 	{
 		for (int i = 0; i < M; i++)
@@ -124,7 +142,7 @@ public:
 		}
 		cout << endl << endl;
 	}
-	matrix<X> & operator &() //TRANSPONIROVANIE
+	matrix<X> & operator ~() //TRANSPONIROVANIE
 	{
 		matrix<X> U(N, M);
 
@@ -194,11 +212,11 @@ public:
 			return *this;
 		}
 
-		Z& operator*() {
+		X& operator*() {
 			return Ma->e[c];
 		}
 
-		Z* operator->() {
+		X* operator->() {
 			return &(Ma->e[c]);
 		}
 
@@ -220,8 +238,21 @@ public:
 
 };
 
-template<template <class> class cont, typename Z, typename X>
-cont<X> caster(cont<Z> a) {
+template <typename X>
+ostream&  operator <<(ostream& os, const matrix<X> &a)
+{
+	for (int i = 0; i < a.M; i++)
+	{
+		for (int j = 0; j <a.N; j++)
+			os << a.T[i][j] << " ";
+		cout << endl;
+	}
+	cout << endl << endl;
+	return os;
+}
+
+template<template <class> class cont, typename X, typename F>
+cont<F> caster(cont<X> a) {
 	cont<X> b(m.n, m.m);
 	for (int i = 0; i < n*m; i++) b.e[i] = static_cast<X>(a.e[i]);
 	return b;
@@ -249,7 +280,7 @@ void function(matrix<X> G, X n)
 	G.print();
 
 	cout << "Transponirovanie: \n";
-	G = &G;
+	G = ~G;
 	G.print();
 
 	cout << "Konkatenacia: \n";
